@@ -43,7 +43,7 @@ export default function Overlay({ data, onDataLoaded }) {
                 style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', flex: 1, justifyContent: 'center' }}
               >
                 <RefreshCcw size={16} />
-                Try Another
+                Try Another user
               </button>
               
               <div style={{ flex: 1, display: 'flex' }}>
