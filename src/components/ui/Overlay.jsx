@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { RefreshCcw } from 'lucide-react';
 import SearchScreen from './SearchScreen';
 import SnapshotTool from './SnapshotTool';
 
@@ -19,8 +20,9 @@ export default function Overlay({ data, onDataLoaded }) {
             animate={{ opacity: 1 }}
             transition={{ delay: 2, duration: 1 }}
             className="interactive-ui"
-            style={{ position: 'absolute', bottom: '2rem', left: '2rem' }}
+            style={{ position: 'absolute', bottom: '2rem', left: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
           >
+            {/* Profile Banner */}
             <div className="glass-panel" style={{ padding: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <img src={data.core.avatarUrl} alt="Avatar" style={{ width: '48px', height: '48px', borderRadius: '50%' }} crossOrigin="anonymous" />
@@ -32,21 +34,25 @@ export default function Overlay({ data, onDataLoaded }) {
                 </div>
               </div>
             </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button 
+                onClick={() => onDataLoaded(null)}
+                className="glass-panel"
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', flex: 1, justifyContent: 'center' }}
+              >
+                <RefreshCcw size={16} />
+                Try Another
+              </button>
+              
+              <div style={{ flex: 1, display: 'flex' }}>
+                <SnapshotTool username={data.core.username} />
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-      
-      {data && (
-        <motion.div
-           initial={{ opacity: 0 }}
-           animate={{ opacity: 1 }}
-           transition={{ delay: 2, duration: 1 }}
-           className="interactive-ui"
-           style={{ position: 'absolute', bottom: '2rem', right: '2rem' }}
-        >
-          <SnapshotTool username={data.core.username} />
-        </motion.div>
-      )}
     </div>
   );
 }
