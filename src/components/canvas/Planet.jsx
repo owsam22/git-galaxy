@@ -46,7 +46,12 @@ export default function Planet({ data, onClick }) {
       {/* Orbit Ring centered at 0,0,0 */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[data.distance - 0.02, data.distance + 0.02, 64]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.05} side={THREE.DoubleSide} />
+        <meshBasicMaterial 
+          color={data.isContributed ? "#38bdf8" : "#ffffff"} 
+          transparent 
+          opacity={data.isContributed ? 0.1 : 0.05} 
+          side={THREE.DoubleSide} 
+        />
       </mesh>
 
       {/* The Planet itself */}
@@ -63,10 +68,11 @@ export default function Planet({ data, onClick }) {
           <sphereGeometry args={[data.size, 32, 32]} />
           <meshStandardMaterial 
             color={color} 
-            roughness={0.7} 
-            metalness={0.3}
+            roughness={data.isContributed ? 0.2 : 0.7} 
+            metalness={data.isContributed ? 0.8 : 0.3}
             emissive={color}
-            emissiveIntensity={data.isActive ? 0.2 : 0}
+            emissiveIntensity={data.isActive || data.isContributed ? 0.2 : 0}
+            wireframe={data.isContributed}
           />
         </mesh>
 
