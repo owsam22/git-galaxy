@@ -76,4 +76,38 @@ button {
 
 button:hover {
   background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.share-btn {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  font-weight: 500;
+}
+
+.share-btn:hover {
+  background: rgba(56, 189, 248, 0.1) !important;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.footer-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.footer-link:hover {
+  background: rgba(56, 189, 248, 0.1);
+  text-decoration: underline;
+}
+
+.preview-container {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
