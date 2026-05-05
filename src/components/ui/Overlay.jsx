@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCcw } from 'lucide-react';
+import { RefreshCcw, Share2 } from 'lucide-react';
 import SearchScreen from './SearchScreen';
 import SnapshotTool from './SnapshotTool';
 
@@ -36,23 +36,60 @@ export default function Overlay({ data, onDataLoaded }) {
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert('Link copied to clipboard!');
+                }}
+                className="glass-panel share-btn"
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', justifyContent: 'center' }}
+              >
+                <Share2 size={16} />
+                Share my galaxy
+              </button>
+
               <button 
                 onClick={() => onDataLoaded(null)}
                 className="glass-panel"
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', flex: 1, justifyContent: 'center' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', justifyContent: 'center' }}
               >
                 <RefreshCcw size={16} />
                 Try Another user
               </button>
-              
-              <div style={{ flex: 1, display: 'flex' }}>
-                <SnapshotTool username={data.core.username} />
-              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {data && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 2.2, duration: 1 }}
+            style={{ position: 'absolute', bottom: '2rem', right: '2rem' }}
+            className="interactive-ui"
+          >
+            <SnapshotTool username={data.core.username} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div 
+        style={{ 
+          position: 'absolute', 
+          bottom: '1rem', 
+          left: '50%', 
+          transform: 'translateX(-50%)',
+          color: 'var(--text-secondary)',
+          fontSize: '0.8rem',
+          pointerEvents: 'auto',
+          zIndex: 20
+        }}
+      >
+        developed by <a href="https://github.com/owsam22" target="_blank" rel="noopener noreferrer" className="footer-link">@owsam22</a>
+      </div>
     </div>
   );
 }
