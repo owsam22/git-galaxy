@@ -43,7 +43,7 @@ export default function Universe({ data, onPlanetClick }) {
   return (
     <Canvas
       camera={{ position: [0, 10, 20], fov: 45 }}
-      gl={{ antialias: true, alpha: false }}
+      gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
       onCreated={({ gl, scene }) => {
         scene.background = new THREE.Color('#05070A');
         gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));

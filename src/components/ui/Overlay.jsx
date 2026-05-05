@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCcw, Share2 } from 'lucide-react';
+import { RefreshCcw, Share2, Download, X } from 'lucide-react';
 import SearchScreen from './SearchScreen';
 import SnapshotTool from './SnapshotTool';
 
 export default function Overlay({ data, onDataLoaded }) {
+  const [snapshotPreview, setSnapshotPreview] = useState(null);
+
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <AnimatePresence>
@@ -38,9 +40,25 @@ export default function Overlay({ data, onDataLoaded }) {
             {/* Action Buttons */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
               <button 
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('Link copied to clipboard!');
+                onClick={async () => {
+                  const shareData = {
+                    title: 'Git Galaxy',
+                    text: `Explore this Git Galaxy!`,
+                    url: window.location.href,
+                  };
+                  
+                  if (navigator.share && navigator.canShare(shareData)) {
+                    try {
+                      await navigator.share(shareData);
+                    } catch (err) {
+                      if (err.name !== 'AbortError') {
+                        console.error('Error sharing:', err);
+                      }
+                    }
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied to clipboard!');
+                  }
                 }}
                 className="glass-panel share-btn"
                 style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', justifyContent: 'center' }}
@@ -71,7 +89,94 @@ export default function Overlay({ data, onDataLoaded }) {
             style={{ position: 'absolute', bottom: '2rem', right: '2rem' }}
             className="interactive-ui"
           >
-            <SnapshotTool username={data.core.username} />
+            <SnapshotTool username={data.core.username} onSnapshot={setSnapshotPreview} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Snapshot Preview Modal - Moved here to avoid parent transform issues */}
+      <AnimatePresence>
+        {snapshotPreview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="no-capture"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0, 0, 0, 0.9)',
+              backdropFilter: 'blur(10px)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 9999,
+              padding: '2rem',
+              pointerEvents: 'auto'
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="glass-panel preview-container"
+              style={{
+                maxWidth: '90%',
+                maxHeight: '75%',
+                overflow: 'hidden',
+                position: 'relative',
+                padding: '4px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.2)'
+              }}
+            >
+              <img 
+                src={snapshotPreview} 
+                alt="Snapshot Preview" 
+                style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '4px' }} 
+              />
+            </motion.div>
+
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+              <button 
+                onClick={() => {
+                  const link = document.createElement('a');
+                  link.download = `${data.core.username}-galaxy.png`;
+                  link.href = snapshotPreview;
+                  link.click();
+                  setSnapshotPreview(null);
+                }}
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  background: 'var(--accent)', 
+                  color: 'black',
+                  fontWeight: 600,
+                  padding: '12px 24px'
+                }}
+              >
+                <Download size={20} />
+                Save to download
+              </button>
+              
+              <button 
+                onClick={() => setSnapshotPreview(null)}
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
+              >
+                <X size={20} />
+                Cancel
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
