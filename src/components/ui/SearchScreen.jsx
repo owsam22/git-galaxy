@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { fetchUserData } from '../../services/github';
 import { mapGitHubDataToUniverse } from '../../services/dataMapping';
@@ -9,15 +9,14 @@ export default function SearchScreen({ onDataLoaded }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!username.trim()) return;
+  const performSearch = async (targetUsername) => {
+    if (!targetUsername.trim()) return;
 
     setLoading(true);
     setError('');
 
     try {
-      const rawData = await fetchUserData(username);
+      const rawData = await fetchUserData(targetUsername);
       const mappedData = mapGitHubDataToUniverse(rawData);
       onDataLoaded(mappedData);
     } catch (err) {
@@ -25,6 +24,20 @@ export default function SearchScreen({ onDataLoaded }) {
       setError(`Error: ${err.message}`);
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const userParam = params.get('user');
+    if (userParam) {
+      setUsername(userParam);
+      performSearch(userParam);
+    }
+  }, []);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    performSearch(username);
   };
 
   return (
