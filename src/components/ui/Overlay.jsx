@@ -41,10 +41,11 @@ export default function Overlay({ data, onDataLoaded }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
               <button 
                 onClick={async () => {
+                  const shareUrl = `${window.location.origin}${window.location.pathname}?user=${data.core.username}`;
                   const shareData = {
                     title: 'Git Galaxy',
                     text: `Explore this Git Galaxy!`,
-                    url: window.location.href,
+                    url: shareUrl,
                   };
                   
                   if (navigator.share && navigator.canShare(shareData)) {
@@ -56,7 +57,7 @@ export default function Overlay({ data, onDataLoaded }) {
                       }
                     }
                   } else {
-                    navigator.clipboard.writeText(window.location.href);
+                    navigator.clipboard.writeText(shareUrl);
                     alert('Link copied to clipboard!');
                   }
                 }}
@@ -73,7 +74,7 @@ export default function Overlay({ data, onDataLoaded }) {
                 style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', justifyContent: 'center' }}
               >
                 <RefreshCcw size={16} />
-                Try Another user
+                Find Another user
               </button>
             </div>
           </motion.div>
