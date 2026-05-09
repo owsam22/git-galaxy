@@ -26,7 +26,7 @@ export default function Planet({ data, onClick }) {
     HTML: '#e34c26',
     CSS: '#563d7c',
   };
-  const color = data.language ? (colors[data.language] || '#888888') : '#555555';
+  const color = data.language ? (colors[data.language] || '#2dd4bf') : '#0d9488';
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
