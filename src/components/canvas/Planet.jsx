@@ -68,13 +68,39 @@ export default function Planet({ data, onClick }) {
           <sphereGeometry args={[data.size, 32, 32]} />
           <meshStandardMaterial 
             color={color} 
-            roughness={data.isContributed ? 0.2 : 0.7} 
-            metalness={data.isContributed ? 0.8 : 0.3}
+            roughness={data.isContributed ? 0.1 : 0.6} 
+            metalness={data.isContributed ? 0.9 : 0.4}
             emissive={color}
-            emissiveIntensity={data.isActive || data.isContributed ? 0.2 : 0}
+            emissiveIntensity={data.isContributed ? 0.5 : (data.heat > 0 ? 0.3 + data.heat : 0.1)}
             wireframe={data.isContributed}
           />
         </mesh>
+
+        {/* Dynamic Glow for Active/High-Commit Planets */}
+        {(data.heat > 0.5 || data.isActive) && (
+          <mesh scale={[1.2, 1.2, 1.2]}>
+            <sphereGeometry args={[data.size, 16, 16]} />
+            <meshBasicMaterial 
+              color={color} 
+              transparent 
+              opacity={Math.min(0.1 + (data.heat * 0.1), 0.3)} 
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+        )}
+
+        {/* Extra Aura for very hot planets */}
+        {data.heat > 1.2 && (
+          <mesh scale={[1.4, 1.4, 1.4]}>
+            <sphereGeometry args={[data.size, 16, 16]} />
+            <meshBasicMaterial 
+              color={color} 
+              transparent 
+              opacity={0.05} 
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+        )}
 
         {/* Label on Hover */}
         {hovered && (

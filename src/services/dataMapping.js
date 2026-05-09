@@ -39,6 +39,16 @@ export const mapGitHubDataToUniverse = (data) => {
   const planets = allRepos.map((repo, index) => {
     const daysSincePush = (new Date() - new Date(repo.pushed_at)) / (1000 * 60 * 60 * 24);
     
+    // Calculate recent commits for this specific repo from events
+    const repoEvents = events.filter(e => e.repo?.id === repo.id && e.type === 'PushEvent');
+    const repoCommits = repoEvents.reduce((acc, e) => acc + (e.payload?.commits?.length || 0), 0);
+    
+    // Size based on stars AND forks
+    const baseSize = 0.25;
+    const starWeight = Math.min(repo.stargazers_count * 0.04, 0.8);
+    const forkWeight = Math.min(repo.forks_count * 0.08, 0.5);
+    const calculatedSize = repo.isContributed ? 0.6 : baseSize + starWeight + forkWeight;
+
     return {
       id: repo.id,
       name: repo.name,
@@ -47,9 +57,10 @@ export const mapGitHubDataToUniverse = (data) => {
       stars: repo.stargazers_count,
       forks: repo.forks_count,
       language: repo.language,
-      size: repo.isContributed ? 0.6 : Math.max(0.2, Math.min(0.2 + repo.stargazers_count * 0.05, 1.5)), // Fixed size for contributed
-      distance: 3 + index * 0.8 + (daysSincePush * 0.005), // More recent = closer
-      isActive: daysSincePush < 90, // Active in last 90 days
+      size: Math.min(calculatedSize, 2.0),
+      distance: 3 + index * 0.8 + (daysSincePush * 0.005),
+      isActive: daysSincePush < 90,
+      heat: Math.min(repoCommits / 5, 2), // Activity heat based on recent commits
       lastPush: repo.pushed_at,
       isContributed: !!repo.isContributed
     };
