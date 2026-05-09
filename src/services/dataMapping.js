@@ -62,7 +62,14 @@ export const mapGitHubDataToUniverse = (data) => {
       brightness: coreBrightness,
       pulseSpeed: pulseSpeed,
       followers: profile.followers,
-      publicRepos: profile.public_repos
+      following: profile.following,
+      publicRepos: profile.public_repos,
+      bio: profile.bio,
+      location: profile.location,
+      company: profile.company,
+      blog: profile.blog,
+      twitter: profile.twitter_username,
+      createdAt: profile.created_at
     },
     planets,
     recentCommits

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCcw, Share2, Download, X } from 'lucide-react';
+import { RefreshCcw, Share2, Download, X, ChevronDown, ChevronUp, MapPin, Briefcase, Link, MessageCircle, Users, Calendar } from 'lucide-react';
 import SearchScreen from './SearchScreen';
 import SnapshotTool from './SnapshotTool';
 
 export default function Overlay({ data, onDataLoaded }) {
   const [snapshotPreview, setSnapshotPreview] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
@@ -25,17 +26,108 @@ export default function Overlay({ data, onDataLoaded }) {
             style={{ position: 'absolute', bottom: '2rem', left: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
           >
             {/* Profile Banner */}
-            <div className="glass-panel" style={{ padding: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <motion.div 
+              layout
+              className="glass-panel" 
+              style={{ 
+                padding: '1.2rem',
+                width: isExpanded ? '350px' : 'auto',
+                transition: { type: 'spring', stiffness: 300, damping: 30 }
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: isExpanded ? '1rem' : '0' }}>
                 <img src={data.core.avatarUrl} alt="Avatar" style={{ width: '48px', height: '48px', borderRadius: '50%' }} crossOrigin="anonymous" />
-                <div>
+                <div style={{ flex: 1 }}>
                   <h2 style={{ fontSize: '1.2rem', fontWeight: 600 }}>{data.core.username}</h2>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                    Total Repos: {data.core.publicRepos} | Followers: {data.core.followers}
-                  </p>
+                  {!isExpanded && (
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                      Repos: {data.core.publicRepos} | Followers: {data.core.followers}
+                    </p>
+                  )}
                 </div>
+                <button 
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  style={{ 
+                    padding: '4px', 
+                    background: 'transparent', 
+                    border: 'none', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    color: 'var(--accent)',
+                    fontSize: '0.8rem',
+                    gap: '4px'
+                  }}
+                >
+                  {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  {isExpanded ? 'Less' : 'More'}
+                </button>
               </div>
-            </div>
+
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                      {data.core.bio && (
+                        <p style={{ fontSize: '0.9rem', marginBottom: '1rem', color: 'var(--text-primary)', lineHeight: '1.4' }}>
+                          {data.core.bio}
+                        </p>
+                      )}
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', marginBottom: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                          <Users size={14} />
+                          <span>{data.core.followers} followers</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                          <Users size={14} />
+                          <span>{data.core.following} following</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                          <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'var(--accent)', opacity: 0.8 }} />
+                          <span>{data.core.publicRepos} repos</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                          <Calendar size={14} />
+                          <span>Joined {new Date(data.core.createdAt).getFullYear()}</span>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {data.core.location && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                            <MapPin size={14} />
+                            <span>{data.core.location}</span>
+                          </div>
+                        )}
+                        {data.core.company && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                            <Briefcase size={14} />
+                            <span>{data.core.company}</span>
+                          </div>
+                        )}
+                        {data.core.blog && (
+                          <a href={data.core.blog.startsWith('http') ? data.core.blog : `https://${data.core.blog}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--accent)', textDecoration: 'none' }}>
+                            <Link size={14} />
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{data.core.blog}</span>
+                          </a>
+                        )}
+                        {data.core.twitter && (
+                          <a href={`https://twitter.com/${data.core.twitter}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--accent)', textDecoration: 'none' }}>
+                            <MessageCircle size={14} />
+                            <span>@{data.core.twitter}</span>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
