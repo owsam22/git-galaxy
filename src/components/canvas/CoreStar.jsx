@@ -89,19 +89,54 @@ export default function CoreStar({ data }) {
         />
       </mesh>
       
-      {/* Core Light Source */}
+      {/* Core Light Sources */}
       <pointLight 
         color="#ffffff" 
-        intensity={data.brightness * 2} 
-        distance={40} 
+        intensity={data.brightness * 3} 
+        distance={60} 
         decay={2}
       />
       <pointLight 
         color="#39d353" 
-        intensity={data.brightness} 
-        distance={20} 
+        intensity={data.brightness * 2} 
+        distance={30} 
         position={[2, 2, 2]}
       />
+
+      {/* Strong Aura (Stars) - Blue Fire */}
+      {data.stats.totalStars > 100 && (
+        <mesh scale={[1.2, 1.2, 1.2]}>
+          <sphereGeometry args={[2.5, 32, 32]} />
+          <meshBasicMaterial 
+            color="#38bdf8" 
+            transparent 
+            opacity={Math.min(0.05 + data.stats.totalStars / 5000, 0.2)} 
+            blending={THREE.AdditiveBlending}
+            side={THREE.BackSide}
+          />
+        </mesh>
+      )}
+
+      {/* Strong Aura (Streak) - Golden Radiance */}
+      {data.stats.contributionStreak > 5 && (
+        <mesh scale={[1.1, 1.1, 1.1]} rotation={[Math.PI / 4, 0, 0]}>
+          <torusGeometry args={[2.8, 0.02, 16, 100]} />
+          <meshBasicMaterial 
+            color="#fbbf24" 
+            transparent 
+            opacity={Math.min(0.2 + data.stats.contributionStreak / 50, 0.6)} 
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      )}
+
+      {data.stats.contributionStreak > 5 && (
+        <pointLight 
+          color="#fbbf24" 
+          intensity={Math.min(data.stats.contributionStreak / 10, 3)} 
+          distance={40} 
+        />
+      )}
 
       {/* Hover Label */}
       {hovered && (
