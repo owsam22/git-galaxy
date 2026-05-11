@@ -31,8 +31,8 @@ export default function Planet({ data, onClick }) {
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     if (planetGroupRef.current) {
-      // Calculate new position
-      const currentAngle = angle + t * speed;
+      // Calculate new position (anticlockwise)
+      const currentAngle = angle - t * speed;
       planetGroupRef.current.position.x = Math.cos(currentAngle) * data.distance;
       planetGroupRef.current.position.z = Math.sin(currentAngle) * data.distance;
     }
@@ -42,14 +42,14 @@ export default function Planet({ data, onClick }) {
   });
 
   return (
-    <group>
-      {/* Orbit Ring centered at 0,0,0 */}
+    <group rotation={[data.inclination, data.orbitRotation, 0]}>
+      {/* Orbit Ring */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[data.distance - 0.02, data.distance + 0.02, 64]} />
         <meshBasicMaterial 
           color={data.isContributed ? "#38bdf8" : "#ffffff"} 
           transparent 
-          opacity={data.isContributed ? 0.1 : 0.05} 
+          opacity={data.isContributed ? 0.15 : 0.05} 
           side={THREE.DoubleSide} 
         />
       </mesh>
@@ -105,17 +105,29 @@ export default function Planet({ data, onClick }) {
         {/* Label on Hover */}
         {hovered && (
           <Html distanceFactor={15} center>
-            <div style={{
-              background: 'rgba(0,0,0,0.8)',
+            <div className="glass-panel" style={{
+              padding: '8px 12px',
+              borderRadius: '8px',
               color: 'white',
-              padding: '4px 8px',
-              borderRadius: '4px',
-              border: `1px solid ${color}`,
               fontSize: '12px',
               whiteSpace: 'nowrap',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px',
+              border: `1px solid ${color}`,
+              boxShadow: `0 0 15px ${color}33`,
+              backdropFilter: 'blur(10px)'
             }}>
-              {data.name}
+              <div style={{ fontWeight: 600, fontSize: '14px' }}>{data.name}</div>
+              <div style={{ display: 'flex', gap: '8px', opacity: 0.8, fontSize: '11px' }}>
+                <span>⭐ {data.stars}</span>
+                <span>🍴 {data.forks}</span>
+                <span style={{ color }}>{data.language || 'Text'}</span>
+              </div>
+              <div style={{ opacity: 0.5, fontSize: '10px', marginTop: '2px' }}>
+                Last push: {new Date(data.lastPush).toLocaleDateString()}
+              </div>
             </div>
           </Html>
         )}
