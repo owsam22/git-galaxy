@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { fetchUserData } from '../../services/github';
+import { fetchGalaxyData } from '../../services/api';
 import { mapGitHubDataToUniverse } from '../../services/dataMapping';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, History } from 'lucide-react';
 
-export default function SearchScreen({ onDataLoaded }) {
+export default function SearchScreen({ onDataLoaded, galaxyUsers = [] }) {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -16,12 +16,12 @@ export default function SearchScreen({ onDataLoaded }) {
     setError('');
 
     try {
-      const rawData = await fetchUserData(targetUsername);
+      const rawData = await fetchGalaxyData(targetUsername);
       const mappedData = mapGitHubDataToUniverse(rawData);
       onDataLoaded(mappedData);
     } catch (err) {
       console.error("SearchScreen caught an error:", err);
-      setError(`Error: ${err.message}`);
+      setError(`Error: ${err.message || 'User not found or API limit reached'}`);
       setLoading(false);
     }
   };
@@ -51,7 +51,8 @@ export default function SearchScreen({ onDataLoaded }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'var(--bg-color)',
+        background: 'rgba(5, 7, 10, 0.1)',
+        backdropFilter: 'blur(5px)',
         zIndex: 20
       }}
       className="interactive-ui"
@@ -83,7 +84,55 @@ export default function SearchScreen({ onDataLoaded }) {
         </button>
       </form>
 
-      {error && <p style={{ color: '#ef4444', marginTop: '1rem' }}>{error}</p>}
+      {galaxyUsers.length > 0 && (
+        <div style={{ marginTop: '3rem', width: '100%', maxWidth: '600px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '1rem', justifyContent: 'center' }}>
+            <History size={14} />
+            <span>RECENTLY SEARCHED</span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center' }}>
+            {galaxyUsers.slice(0, 8).map(user => (
+              <button
+                key={user.username}
+                onClick={() => {
+                  setUsername(user.username);
+                  performSearch(user.username);
+                }}
+                className="glass-panel"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '6px 12px',
+                  fontSize: '0.85rem',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}
+              >
+                <img src={user.profile.avatar_url} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
+                {user.username}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ 
+            color: '#ef4444', 
+            marginTop: '1.5rem', 
+            background: 'rgba(239, 68, 68, 0.1)', 
+            padding: '10px 20px', 
+            borderRadius: '8px',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            fontSize: '0.9rem'
+          }}
+        >
+          {error.includes('404') ? 'User not found. Please check the spelling.' : error}
+        </motion.div>
+      )}
       
       <style>{`
         @keyframes spin {
