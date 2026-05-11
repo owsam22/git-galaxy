@@ -111,3 +111,60 @@ button:active {
 .preview-container {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
+
+/* Repo Modal & New UI Elements */
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.action-button.primary {
+  background: var(--accent);
+  color: #05070a;
+  border: none;
+}
+
+.action-button.primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.action-button.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-button.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.repo-modal::-webkit-scrollbar {
+  width: 4px;
+}
+
+.repo-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.repo-modal::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
