@@ -27,7 +27,8 @@ export default function ParticleSystem({ count = 100, speed = 1 }) {
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     if (pointsRef.current) {
-      pointsRef.current.rotation.y = t * speed * 0.5;
+      // Clockwise and faster rotation
+      pointsRef.current.rotation.y = -t * speed * 1.5;
     }
   });
 
