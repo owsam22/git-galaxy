@@ -9,7 +9,7 @@ export default function Overlay({ data, onDataLoaded }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div style={{ width: '100%', height: '100%', pointerEvents: 'none' }}>
       <AnimatePresence>
         {!data && (
           <SearchScreen onDataLoaded={onDataLoaded} />
@@ -42,7 +42,18 @@ export default function Overlay({ data, onDataLoaded }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: isExpanded ? '1rem' : '0' }}>
                 <img src={data.core.avatarUrl} alt="Avatar" style={{ width: '48px', height: '48px', borderRadius: '50%' }} crossOrigin="anonymous" />
                 <div style={{ flex: 1 }}>
-                  <motion.h2 layout="position" style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>{data.core.username}</motion.h2>
+                  <motion.h2 layout="position" style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>
+                    <a 
+                      href={`https://github.com/${data.core.username}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ color: 'inherit', textDecoration: 'none' }}
+                      onMouseEnter={(e) => e.target.style.color = 'var(--accent)'}
+                      onMouseLeave={(e) => e.target.style.color = 'inherit'}
+                    >
+                      {data.core.username}
+                    </a>
+                  </motion.h2>
                   {!isExpanded && (
                     <motion.p 
                       layout="position"
@@ -100,16 +111,35 @@ export default function Overlay({ data, onDataLoaded }) {
                           <span>{data.core.followers} followers</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                          <Users size={14} />
-                          <span>{data.core.following} following</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                           <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'var(--accent)', opacity: 0.8 }} />
                           <span>{data.core.publicRepos} repos</span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                          <Calendar size={14} />
-                          <span>Joined {new Date(data.core.createdAt).getFullYear()}</span>
+                      </div>
+
+                      {/* Top Languages */}
+                      <div style={{ marginBottom: '1.2rem' }}>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between' }}>
+                          <span>TOP LANGUAGES</span>
+                        </div>
+                        <div style={{ display: 'flex', height: '6px', borderRadius: '3px', overflow: 'hidden', background: 'rgba(255,255,255,0.1)' }}>
+                          {data.core.stats.topLanguages.map((lang, i) => (
+                            <div 
+                              key={lang.name} 
+                              style={{ 
+                                width: `${lang.percentage}%`, 
+                                background: ['#38bdf8', '#39d353', '#f1e05a', '#f43f5e', '#a855f7'][i % 5]
+                              }} 
+                            />
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '8px' }}>
+                          {data.core.stats.topLanguages.slice(0, 3).map((lang, i) => (
+                            <div key={lang.name} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.7rem' }}>
+                              <div style={{ width: 6, height: 6, borderRadius: '50%', background: ['#38bdf8', '#39d353', '#f1e05a', '#f43f5e', '#a855f7'][i % 5] }} />
+                              <span style={{ opacity: 0.8 }}>{lang.name}</span>
+                              <span style={{ opacity: 0.5 }}>{lang.percentage}%</span>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
@@ -120,22 +150,10 @@ export default function Overlay({ data, onDataLoaded }) {
                             <span>{data.core.location}</span>
                           </div>
                         )}
-                        {data.core.company && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                            <Briefcase size={14} />
-                            <span>{data.core.company}</span>
-                          </div>
-                        )}
                         {data.core.blog && (
                           <a href={data.core.blog.startsWith('http') ? data.core.blog : `https://${data.core.blog}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--accent)', textDecoration: 'none' }}>
                             <Link size={14} />
                             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{data.core.blog}</span>
-                          </a>
-                        )}
-                        {data.core.twitter && (
-                          <a href={`https://twitter.com/${data.core.twitter}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--accent)', textDecoration: 'none' }}>
-                            <MessageCircle size={14} />
-                            <span>@{data.core.twitter}</span>
                           </a>
                         )}
                       </div>
@@ -144,9 +162,9 @@ export default function Overlay({ data, onDataLoaded }) {
                 )}
               </AnimatePresence>
             </motion.div>
-
+            
             {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', width: isExpanded ? '350px' : '260px' }}>
               <button 
                 onClick={async () => {
                   const shareUrl = `${window.location.origin}${window.location.pathname}?user=${data.core.username}`;
@@ -169,19 +187,39 @@ export default function Overlay({ data, onDataLoaded }) {
                     alert('Link copied to clipboard!');
                   }
                 }}
-                className="glass-panel share-btn"
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', justifyContent: 'center' }}
+                className="glass-panel"
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px', 
+                  padding: '12px 20px', 
+                  justifyContent: 'center',
+                  color: '#38bdf8',
+                  border: '1px solid #38bdf8',
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  cursor: 'pointer'
+                }}
               >
-                <Share2 size={16} />
+                <Share2 size={20} />
                 Share my galaxy
               </button>
 
               <button 
                 onClick={() => onDataLoaded(null)}
                 className="glass-panel"
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', justifyContent: 'center' }}
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px', 
+                  padding: '12px 20px', 
+                  justifyContent: 'center',
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  cursor: 'pointer'
+                }}
               >
-                <RefreshCcw size={16} />
+                <RefreshCcw size={20} />
                 Find Another user
               </button>
             </div>
