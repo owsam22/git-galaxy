@@ -6,9 +6,12 @@ const GITHUB_GRAPHQL_BASE = 'https://api.github.com/graphql';
 const getHeaders = () => {
   const headers = {
     Accept: 'application/vnd.github.v3+json',
+    'User-Agent': 'Git-Galaxy-Server'
   };
   if (process.env.GITHUB_TOKEN) {
     headers.Authorization = `token ${process.env.GITHUB_TOKEN}`;
+  } else {
+    console.warn('[Backend] ⚠️ No GITHUB_TOKEN provided. Rate limits will be restricted (60 req/hr).');
   }
   return headers;
 };
@@ -223,9 +226,16 @@ const fetchUserDataFromGitHub = async (username) => {
       }
     };
   } catch (error) {
-    console.error(`[Backend] GitHub Fetch Error for ${username}:`, error.response?.status, error.message);
-    if (error.response?.status === 403) {
-      console.warn("[Backend] Rate limit reached. Consider adding a GITHUB_TOKEN.");
+    const status = error.response?.status;
+    const message = error.message;
+    console.error(`[Backend] ❌ GitHub Fetch Error for ${username}:`, status || 'No Status', message);
+    
+    if (status === 403 || status === 429) {
+      const rateLimitReset = error.response.headers?.['x-ratelimit-reset'];
+      if (rateLimitReset) {
+        const resetDate = new Date(rateLimitReset * 1000);
+        console.warn(`[Backend] Rate limit resets at: ${resetDate.toLocaleString()}`);
+      }
     }
     throw error;
   }

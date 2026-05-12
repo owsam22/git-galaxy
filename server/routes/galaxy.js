@@ -47,14 +47,32 @@ router.get('/galaxy/:username', async (req, res) => {
 
     res.json(user);
   } catch (error) {
-    console.error(`[Backend] Error processing request for ${username}:`, error.message);
+    console.error(`[Backend] ❌ Error processing galaxy request for ${username}:`);
+    console.error(`  - Message: ${error.message}`);
     
-    // Check if it's a GitHub 404
-    if (error.response?.status === 404) {
-      return res.status(404).json({ error: 'GitHub user not found' });
+    if (error.response) {
+      console.error(`  - GitHub API Status: ${error.response.status}`);
+      console.error(`  - GitHub API Data:`, JSON.stringify(error.response.data));
+      
+      if (error.response.status === 404) {
+        return res.status(404).json({ error: 'GitHub user not found' });
+      }
+      if (error.response.status === 403 || error.response.status === 429) {
+        return res.status(429).json({ 
+          error: 'GitHub API rate limit exceeded. Please try again later or add a GITHUB_TOKEN.',
+          details: error.response.data?.message 
+        });
+      }
+    }
+
+    if (error.name === 'MongoError' || error.name === 'MongooseError' || error.message.includes('buffering timed out')) {
+      return res.status(503).json({ error: 'Database connection issue. Please check your MONGODB_URI.' });
     }
     
-    res.status(500).json({ error: 'Internal server error while fetching galaxy data' });
+    res.status(500).json({ 
+      error: 'Internal server error while fetching galaxy data',
+      message: error.message 
+    });
   }
 });
 
