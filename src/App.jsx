@@ -103,6 +103,7 @@ function App() {
             data={universeData} 
             onDataLoaded={handleDataLoaded} 
             userCount={userCount}
+            galaxyUsers={galaxyUsers}
           />
         )}
 
