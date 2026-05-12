@@ -82,7 +82,7 @@ router.get('/galaxy/:username', async (req, res) => {
 router.get('/users/all', async (req, res) => {
   try {
     // Return lightweight list for background stars
-    const users = await User.find({}, 'username profile.avatar_url stats').lean();
+    const users = await User.find({}, 'username profile.avatar_url stats').sort({ lastFetched: -1 }).lean();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });
