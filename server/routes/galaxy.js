@@ -6,15 +6,18 @@ const { fetchUserDataFromGitHub } = require('../services/githubFetcher');
 // GET /api/galaxy/:username
 router.get('/galaxy/:username', async (req, res) => {
   const { username } = req.params;
+  const { refresh } = req.query;
   const lowercaseUsername = username.toLowerCase();
 
   try {
     let user = await User.findOne({ username: { $regex: new RegExp(`^${lowercaseUsername}$`, 'i') } });
 
     const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    const shouldFetchFresh = !user || user.lastFetched < sixHoursAgo || refresh === 'true';
 
-    if (!user || user.lastFetched < sixHoursAgo) {
-      console.log(`[Backend] Fetching fresh data for ${username}... (Reason: ${!user ? 'New User' : 'Cache Stale'})`);
+    if (shouldFetchFresh) {
+      const reason = !user ? 'New User' : (refresh === 'true' ? 'Manual Refresh' : 'Cache Stale');
+      console.log(`[Backend] Fetching fresh data for ${username}... (Reason: ${reason})`);
       const githubData = await fetchUserDataFromGitHub(username);
       
       if (user) {
@@ -61,6 +64,16 @@ router.get('/users/all', async (req, res) => {
     // Return lightweight list for background stars
     const users = await User.find({}, 'username profile.avatar_url stats').lean();
     res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/stats
+router.get('/stats', async (req, res) => {
+  try {
+    const userCount = await User.countDocuments();
+    res.json({ userCount });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
