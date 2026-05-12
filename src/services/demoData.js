@@ -1,0 +1,100 @@
+export const demoData = {
+  core: {
+    username: "Git Galaxy",
+    avatarUrl: "https://avatars.githubusercontent.com/u/178936868?v=4",
+    stats: {
+      totalStars: 1000,
+      contributionStreak: 365,
+      totalCommitsThisYear: 5000,
+      todayCommits: 42,
+      topLanguages: [
+        { name: "JavaScript", color: "#f7df1e", percentage: 40 },
+        { name: "React", color: "#61dafb", percentage: 30 },
+        { name: "Three.js", color: "#000000", percentage: 20 },
+        { name: "Node.js", color: "#339933", percentage: 10 }
+      ]
+    },
+    brightness: 2.5,
+    pulseSpeed: 1.2,
+    followers: 369,
+    following: 22,
+    publicRepos: 100,
+    bio: "The demo galaxy of Git Galaxy. Waiting for backend to awaken...",
+    location: "The Cloud",
+    company: "Open Source",
+    blog: "https://github.com/owsam22",
+    twitter: "owsam22",
+    createdAt: new Date().toISOString()
+  },
+  planets: [
+    {
+      id: 1,
+      name: "Universe-Core",
+      description: "Demo Repository for the Git Galaxy visualization engine.",
+      url: "#",
+      stars: 450,
+      forks: 120,
+      language: "JavaScript",
+      size: 1.2,
+      distance: 8,
+      isActive: true,
+      heat: 1.5,
+      lastPush: new Date().toISOString(),
+      isContributed: false,
+      inclination: 0.1,
+      orbitRotation: 0
+    },
+    {
+      id: 2,
+      name: "Stellar-UI",
+      description: "Beautiful glassmorphism UI components for the web.",
+      url: "#",
+      stars: 320,
+      forks: 45,
+      language: "CSS",
+      size: 0.8,
+      distance: 12,
+      isActive: true,
+      heat: 0.8,
+      lastPush: new Date().toISOString(),
+      isContributed: false,
+      inclination: -0.15,
+      orbitRotation: 1.2
+    },
+    {
+      id: 3,
+      name: "Cosmic-API",
+      description: "High-performance data fetching layer for GitHub statistics.",
+      url: "#",
+      stars: 210,
+      forks: 30,
+      language: "TypeScript",
+      size: 0.9,
+      distance: 15,
+      isActive: false,
+      heat: 0.4,
+      lastPush: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+      isContributed: true,
+      inclination: 0.05,
+      orbitRotation: 2.5
+    },
+    {
+      id: 4,
+      name: "Nebula-Engine",
+      description: "Advanced particle system for galaxy-scale rendering.",
+      url: "#",
+      stars: 890,
+      forks: 150,
+      language: "GLSL",
+      size: 1.5,
+      distance: 20,
+      isActive: true,
+      heat: 2.0,
+      lastPush: new Date().toISOString(),
+      isContributed: false,
+      inclination: -0.08,
+      orbitRotation: 4.1
+    }
+  ],
+  todayCommits: 42
+};
