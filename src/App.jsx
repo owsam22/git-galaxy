@@ -34,9 +34,10 @@ function App() {
         const mappedData = mapGitHubDataToUniverse(rawData);
         setUniverseData(mappedData);
         setViewingUser('owsam22');
-        setIsSearchOpen(true); // Keep search open initially
+        setIsSearchOpen(false); // Show galaxy immediately
       } catch (err) {
         console.error("Failed to load default galaxy:", err);
+        setIsSearchOpen(true); // Open search if default fails
       }
     };
     loadDefault();
@@ -90,6 +91,7 @@ function App() {
           <Overlay 
             data={null} 
             onDataLoaded={handleDataLoaded} 
+            onCloseSearch={universeData ? () => setIsSearchOpen(false) : null}
             galaxyUsers={galaxyUsers} 
             userCount={userCount}
           />
