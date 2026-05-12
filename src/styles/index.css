@@ -299,8 +299,7 @@ button:active {
   }
 
   .explorer-count {
-    padding: 7px 10px !important;
-    gap: 6px !important;
+    display: none !important;
   }
 
   /* Full-width bottom nav card on phone */
