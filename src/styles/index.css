@@ -168,3 +168,166 @@ button:active {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
 }
+
+/* Top Navigation Bar */
+.top-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.top-nav-center {
+  flex: 1;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.search-input-top {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px 8px 40px !important;
+  border-radius: 100px !important;
+  font-size: 0.9rem !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-input-top:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+  width: 110%;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .top-nav {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .top-nav-center {
+    order: 3;
+    max-width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  .explorer-count {
+    padding: 6px 10px !important;
+  }
+  
+  .explorer-count span:last-child {
+    display: none; /* Hide 'Explorers' text on mobile */
+  }
+  
+  .profile-card {
+    min-width: 100% !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    border-radius: 20px 20px 0 0 !important;
+    border-bottom: none !important;
+  }
+}
+
+.logo-text {
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  font-weight: 300;
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+.logo-text b {
+  font-weight: 800;
+  color: var(--accent);
+}
+
+/* Site footer */
+.site-footer {
+  padding-bottom: 0.6rem;
+}
+
+/* Profile card wrapper – desktop: bottom-left above footer */
+.profile-card-wrapper {
+  position: absolute;
+  left: 2rem;
+  bottom: 2.4rem;   /* just above footer */
+  z-index: 50;
+}
+
+.profile-card-inner {
+  padding: 0.9rem 1rem;
+  min-width: 270px;
+  max-width: 380px;
+  width: fit-content;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* Snapshot button – desktop bottom-right */
+.snapshot-desktop {
+  position: absolute;
+  bottom: 2.4rem;
+  right: 2rem;
+  z-index: 50;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .top-nav {
+    padding: 0.9rem 1rem;
+    gap: 0.6rem;
+  }
+
+  .logo-text {
+    font-size: 1rem;
+  }
+
+  .explorer-label {
+    display: none; /* just show the number */
+  }
+
+  .explorer-count {
+    padding: 7px 10px !important;
+    gap: 6px !important;
+  }
+
+  /* Full-width bottom nav card on phone */
+  .profile-card-wrapper {
+    left: 0;
+    right: 0;
+    bottom: 1.8rem;   /* sits right above footer */
+    display: flex;
+    justify-content: center;
+    padding: 0 0;
+  }
+
+  .profile-card-inner {
+    min-width: 100%;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+    padding: 0.85rem 1.1rem;
+  }
+
+  /* Hide snapshot on mobile */
+  .snapshot-desktop {
+    display: none;
+  }
+
+  .site-footer {
+    bottom: 0;
+    padding-bottom: 0.4rem;
+  }
+}
