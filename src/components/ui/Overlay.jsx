@@ -159,11 +159,51 @@ export default function Overlay({ data, onDataLoaded, userCount = 0 }) {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.2rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                           <Users size={14} />
-                          <span>{data.core.followers} followers</span>
+                          <span>{data.core.followers.toLocaleString()} followers</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                           <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'var(--accent)', opacity: 0.8 }} />
                           <span>{data.core.publicRepos} repos</span>
+                        </div>
+                      </div>
+
+                      {/* Contribution Stats */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', marginBottom: '1.5rem' }}>
+                        <div 
+                          className="glass-panel" 
+                          style={{ 
+                            padding: '10px', 
+                            background: 'rgba(57, 211, 83, 0.05)', 
+                            border: '1px solid rgba(57, 211, 83, 0.15)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <span style={{ fontSize: '0.6rem', color: '#39d353', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Streak</span>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                            {data.core.stats.contributionStreak || 0}
+                          </span>
+                          <span style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>days</span>
+                        </div>
+                        <div 
+                          className="glass-panel" 
+                          style={{ 
+                            padding: '10px', 
+                            background: 'rgba(56, 189, 248, 0.05)', 
+                            border: '1px solid rgba(56, 189, 248, 0.15)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <span style={{ fontSize: '0.6rem', color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Commits</span>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                            {data.core.stats.totalCommitsThisYear.toLocaleString()}
+                          </span>
+                          <span style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>this year</span>
                         </div>
                       </div>
 
