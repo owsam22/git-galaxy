@@ -16,7 +16,7 @@ export default function SearchScreen({ onDataLoaded, galaxyUsers = [] }) {
     setError('');
 
     try {
-      const rawData = await fetchGalaxyData(targetUsername);
+      const rawData = await fetchGalaxyData(targetUsername, true);
       const mappedData = mapGitHubDataToUniverse(rawData);
       onDataLoaded(mappedData);
     } catch (err) {

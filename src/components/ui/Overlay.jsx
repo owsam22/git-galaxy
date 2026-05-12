@@ -4,12 +4,61 @@ import { RefreshCcw, Share2, Download, X, ChevronDown, ChevronUp, MapPin, Briefc
 import SearchScreen from './SearchScreen';
 import SnapshotTool from './SnapshotTool';
 
-export default function Overlay({ data, onDataLoaded }) {
+export default function Overlay({ data, onDataLoaded, userCount = 0 }) {
   const [snapshotPreview, setSnapshotPreview] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div style={{ width: '100%', height: '100%', pointerEvents: 'none' }}>
+      {/* User Count - Top Right */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, duration: 1 }}
+        style={{ 
+          position: 'absolute', 
+          top: '2rem', 
+          right: '2rem', 
+          pointerEvents: 'auto',
+          zIndex: 100
+        }}
+      >
+        <div 
+          className="glass-panel"
+          style={{ 
+            padding: '10px 16px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '12px'
+          }}
+        >
+          <div style={{ position: 'relative' }}>
+            <Users size={18} style={{ color: 'var(--accent)' }} />
+            <span style={{ 
+              position: 'absolute', 
+              top: -2, 
+              right: -2, 
+              width: 8, 
+              height: 8, 
+              background: '#10b981', 
+              borderRadius: '50%', 
+              border: '2px solid rgba(0,0,0,0.5)' 
+            }} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1 }}>
+              {userCount.toLocaleString()}
+            </span>
+            <span style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Explorers
+            </span>
+          </div>
+        </div>
+      </motion.div>
+
       <AnimatePresence>
         {!data && (
           <SearchScreen onDataLoaded={onDataLoaded} />
@@ -30,7 +79,9 @@ export default function Overlay({ data, onDataLoaded }) {
               className="glass-panel" 
               style={{ 
                 padding: '1.2rem',
-                width: isExpanded ? '350px' : '260px',
+                minWidth: isExpanded ? '350px' : '280px',
+                maxWidth: '450px',
+                width: 'fit-content',
                 borderRadius: '12px',
                 overflow: 'hidden'
               }}
@@ -42,12 +93,12 @@ export default function Overlay({ data, onDataLoaded }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: isExpanded ? '1rem' : '0' }}>
                 <img src={data.core.avatarUrl} alt="Avatar" style={{ width: '48px', height: '48px', borderRadius: '50%' }} crossOrigin="anonymous" />
                 <div style={{ flex: 1 }}>
-                  <motion.h2 layout="position" style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>
+                  <motion.h2 layout="position" style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     <a 
                       href={`https://github.com/${data.core.username}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      style={{ color: 'inherit', textDecoration: 'none' }}
+                      style={{ color: 'inherit', textDecoration: 'none', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}
                       onMouseEnter={(e) => e.target.style.color = 'var(--accent)'}
                       onMouseLeave={(e) => e.target.style.color = 'inherit'}
                     >
@@ -164,7 +215,7 @@ export default function Overlay({ data, onDataLoaded }) {
             </motion.div>
             
             {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', width: isExpanded ? '350px' : '260px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', width: '100%', minWidth: isExpanded ? '350px' : '280px', maxWidth: '450px' }}>
               <button 
                 onClick={async () => {
                   const shareUrl = `${window.location.origin}${window.location.pathname}?user=${data.core.username}`;
