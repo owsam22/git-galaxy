@@ -4,7 +4,7 @@ import { fetchGalaxyData } from '../../services/api';
 import { mapGitHubDataToUniverse } from '../../services/dataMapping';
 import { Search, Loader2, History, ArrowLeft } from 'lucide-react';
 
-export default function SearchScreen({ onDataLoaded, onClose, galaxyUsers = [] }) {
+export default function SearchScreen({ onDataLoaded, onClose, galaxyUsers = [], isBackendLive = true }) {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,14 +26,6 @@ export default function SearchScreen({ onDataLoaded, onClose, galaxyUsers = [] }
     }
   };
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const userParam = params.get('user');
-    if (userParam) {
-      setUsername(userParam);
-      performSearch(userParam);
-    }
-  }, []);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -98,16 +90,16 @@ export default function SearchScreen({ onDataLoaded, onClose, galaxyUsers = [] }
           <Search size={20} style={{ position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' }} />
           <input 
             type="text" 
-            placeholder="Enter GitHub Username" 
+            placeholder={isBackendLive ? "Enter GitHub Username" : "Backend Offline"} 
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{ paddingLeft: '40px', width: '300px' }}
-            disabled={loading}
+            style={{ paddingLeft: '40px', width: '300px', opacity: isBackendLive ? 1 : 0.6 }}
+            disabled={loading || !isBackendLive}
             autoFocus
           />
         </div>
-        <button type="submit" disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {loading ? <Loader2 className="animate-spin" size={20} style={{ animation: 'spin 1s linear infinite' }} /> : 'Explore'}
+        <button type="submit" disabled={loading || !isBackendLive} style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: isBackendLive ? 1 : 0.5 }}>
+          {loading ? <Loader2 className="animate-spin" size={20} style={{ animation: 'spin 1s linear infinite' }} /> : (isBackendLive ? 'Explore' : 'Offline')}
         </button>
       </form>
 
