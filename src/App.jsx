@@ -2,23 +2,28 @@ import React, { useState, useEffect } from 'react';
 import Universe from './components/canvas/Universe';
 import Overlay from './components/ui/Overlay';
 import RepoModal from './components/ui/RepoModal';
-import { fetchAllGalaxyUsers, fetchGalaxyData } from './services/api';
+import { fetchAllGalaxyUsers, fetchGalaxyData, fetchUserCount } from './services/api';
 import { mapGitHubDataToUniverse } from './services/dataMapping';
 
 function App() {
   const [universeData, setUniverseData] = useState(null);
   const [selectedRepo, setSelectedRepo] = useState(null);
   const [galaxyUsers, setGalaxyUsers] = useState([]);
+  const [userCount, setUserCount] = useState(0);
   const [viewingUser, setViewingUser] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Load all users on mount for background stars
   useEffect(() => {
-    const loadUsers = async () => {
-      const users = await fetchAllGalaxyUsers();
+    const loadData = async () => {
+      const [users, count] = await Promise.all([
+        fetchAllGalaxyUsers(),
+        fetchUserCount()
+      ]);
       setGalaxyUsers(users);
+      setUserCount(count);
     };
-    loadUsers();
+    loadData();
   }, []);
 
   // Load default background galaxy
@@ -42,8 +47,9 @@ function App() {
       setUniverseData(data);
       setViewingUser(data.core.username);
       setIsSearchOpen(false);
-      // Refresh background users list
+      // Refresh background users list and count
       fetchAllGalaxyUsers().then(setGalaxyUsers);
+      fetchUserCount().then(setUserCount);
     } else {
       setIsSearchOpen(true);
     }
@@ -85,6 +91,7 @@ function App() {
             data={null} 
             onDataLoaded={handleDataLoaded} 
             galaxyUsers={galaxyUsers} 
+            userCount={userCount}
           />
         )}
 
@@ -93,6 +100,7 @@ function App() {
           <Overlay 
             data={universeData} 
             onDataLoaded={handleDataLoaded} 
+            userCount={userCount}
           />
         )}
 
