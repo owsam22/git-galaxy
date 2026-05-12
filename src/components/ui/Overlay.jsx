@@ -6,7 +6,7 @@ import SnapshotTool from './SnapshotTool';
 import { fetchGalaxyData } from '../../services/api';
 import { mapGitHubDataToUniverse } from '../../services/dataMapping';
 
-export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount = 0, galaxyUsers = [] }) {
+export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount = 0, galaxyUsers = [], isBackendLive = true }) {
   const [snapshotPreview, setSnapshotPreview] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [topSearch, setTopSearch] = useState('');
@@ -115,9 +115,9 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
                     className="search-input-top"
                     value={topSearch}
                     onChange={(e) => setTopSearch(e.target.value)}
-                    onFocus={() => setSearchFocused(true)}
-                    disabled={isSearching}
-                    style={{ width: '100%' }}
+                    onFocus={() => isBackendLive && setSearchFocused(true)}
+                    disabled={isSearching || !isBackendLive}
+                    style={{ width: '100%', opacity: isBackendLive ? 1 : 0.6 }}
                   />
                 </div>
               </form>
@@ -193,6 +193,7 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
                 </span>
               </div>
             </div>
+
           </motion.div>
         )}
       </AnimatePresence>
@@ -204,6 +205,7 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
             onDataLoaded={onDataLoaded}
             onClose={onCloseSearch}
             galaxyUsers={galaxyUsers}
+            isBackendLive={isBackendLive}
           />
         )}
       </AnimatePresence>
@@ -290,13 +292,18 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
                       {/* Actions */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                          <button
+                           <button
                             onClick={() => onDataLoaded(null)}
                             className="action-button secondary"
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center', fontSize: '0.82rem' }}
+                            disabled={!isBackendLive}
+                            style={{ 
+                              display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center', fontSize: '0.82rem',
+                              opacity: isBackendLive ? 1 : 0.5,
+                              cursor: isBackendLive ? 'pointer' : 'not-allowed'
+                            }}
                           >
                             <RefreshCcw size={14} />
-                            Find Another
+                            {isBackendLive ? 'Find Another' : 'Offline'}
                           </button>
                           <button
                             onClick={async () => {
