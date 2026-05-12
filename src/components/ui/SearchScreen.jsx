@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { fetchGalaxyData } from '../../services/api';
 import { mapGitHubDataToUniverse } from '../../services/dataMapping';
-import { Search, Loader2, History } from 'lucide-react';
+import { Search, Loader2, History, ArrowLeft } from 'lucide-react';
 
-export default function SearchScreen({ onDataLoaded, galaxyUsers = [] }) {
+export default function SearchScreen({ onDataLoaded, onClose, galaxyUsers = [] }) {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -51,17 +51,44 @@ export default function SearchScreen({ onDataLoaded, galaxyUsers = [] }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'rgba(5, 7, 10, 0.1)',
-        backdropFilter: 'blur(5px)',
+        background: 'rgba(5, 7, 10, 0.4)',
+        backdropFilter: 'blur(12px)',
         zIndex: 20
       }}
       className="interactive-ui"
     >
+      {onClose && (
+        <motion.button
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '2rem',
+            left: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            padding: '8px 16px',
+            borderRadius: '100px',
+            color: 'var(--text-secondary)',
+            fontSize: '0.9rem',
+            cursor: 'pointer'
+          }}
+          whileHover={{ background: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)' }}
+        >
+          <ArrowLeft size={16} />
+          Back
+        </motion.button>
+      )}
+
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h1 style={{ fontSize: '3rem', fontWeight: 300, letterSpacing: '2px', marginBottom: '1rem' }}>
+        <h1 style={{ fontSize: '3.5rem', fontWeight: 300, letterSpacing: '4px', marginBottom: '1rem', textShadow: '0 0 30px rgba(56, 189, 248, 0.3)' }}>
           GIT<span style={{ fontWeight: 700, color: 'var(--accent)' }}>GALAXY</span>
         </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', letterSpacing: '1px' }}>
           Your GitHub identity as a living universe
         </p>
       </div>
