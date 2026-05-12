@@ -11,12 +11,14 @@ router.get('/galaxy/:username', async (req, res) => {
 
   try {
     let user = await User.findOne({ username: { $regex: new RegExp(`^${lowercaseUsername}$`, 'i') } });
-
-    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
-    const shouldFetchFresh = !user || user.lastFetched < sixHoursAgo || refresh === 'true';
+    
+    // Only fetch fresh if:
+    // 1. User doesn't exist in our DB at all
+    // 2. OR the 'refresh=true' flag was sent (manual search)
+    const shouldFetchFresh = !user || refresh === 'true';
 
     if (shouldFetchFresh) {
-      const reason = !user ? 'New User' : (refresh === 'true' ? 'Manual Refresh' : 'Cache Stale');
+      const reason = !user ? 'New User' : 'Manual Refresh';
       console.log(`[Backend] Fetching fresh data for ${username}... (Reason: ${reason})`);
       const githubData = await fetchUserDataFromGitHub(username);
       

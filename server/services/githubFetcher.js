@@ -166,9 +166,11 @@ const fetchUserDataFromGitHub = async (username) => {
       }
     }
 
-    // Optional: Fetch richer data if GITHUB_TOKEN is present via GraphQL (overrides profile scrape if successful)
+    let finalTopLanguages = topLanguages;
+    
+    // Optional: Fetch richer data if GITHUB_TOKEN is present via GraphQL
     if (process.env.GITHUB_TOKEN) {
-      console.log(`[Backend] Fetching GraphQL contributions for ${username}`);
+      console.log(`[Backend] Fetching detailed GraphQL stats for ${username}`);
       try {
         const gqlData = await fetchGraphQL(`
           query($username: String!) {
@@ -184,31 +186,72 @@ const fetchUserDataFromGitHub = async (username) => {
                   }
                 }
               }
+              repositories(first: 100, ownerAffiliations: OWNER, orderBy: {field: PUSHED_AT, direction: DESC}) {
+                nodes {
+                  languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+                    edges {
+                      size
+                      node {
+                        name
+                        color
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         `, { username });
 
         if (gqlData?.user) {
+          // 1. Enhanced Streak Calculation
           const calendar = gqlData.user.contributionsCollection.contributionCalendar;
           contributionStats.totalCommitsThisYear = calendar.totalContributions;
 
           let streak = 0;
           const allDays = calendar.weeks.flatMap(w => w.contributionDays).reverse();
+          const today = new Date().toISOString().split('T')[0];
+          
           for (const day of allDays) {
             if (day.contributionCount > 0) {
               streak++;
             } else {
+              // Allow gap only for today
+              if (day.date === today && streak === 0) continue;
               if (streak > 0) break;
+              
+              // If it's not today and count is 0, streak is broken
               const dayDate = new Date(day.date);
               const now = new Date();
               const diffDays = Math.floor((now - dayDate) / (1000 * 60 * 60 * 24));
-              if (diffDays > 1) break; 
+              if (diffDays > 1) break;
             }
           }
           contributionStats.contributionStreak = streak;
+
+          // 2. Enhanced Language Calculation (by Bytes)
+          const detailedLangMap = {};
+          gqlData.user.repositories.nodes.forEach(repo => {
+            repo.languages.edges.forEach(edge => {
+              const langName = edge.node.name;
+              detailedLangMap[langName] = (detailedLangMap[langName] || 0) + edge.size;
+            });
+          });
+
+          const totalBytes = Object.values(detailedLangMap).reduce((a, b) => a + b, 0);
+          if (totalBytes > 0) {
+            finalTopLanguages = Object.entries(detailedLangMap)
+              .map(([name, bytes]) => ({ 
+                name, 
+                percentage: Math.round((bytes / totalBytes) * 100) 
+              }))
+              .filter(l => l.percentage > 0)
+              .sort((a, b) => b.percentage - a.percentage)
+              .slice(0, 6);
+          }
         }
       } catch (gqlErr) {
-        console.warn(`[Backend] GraphQL fetch failed, using profile fallback: ${gqlErr.message}`);
+        console.warn(`[Backend] GraphQL fetch failed, using REST fallback: ${gqlErr.message}`);
       }
     }
 
@@ -220,7 +263,7 @@ const fetchUserDataFromGitHub = async (username) => {
         totalStars,
         totalForks,
         totalCommitsThisYear: contributionStats.totalCommitsThisYear || todayCommits,
-        topLanguages,
+        topLanguages: finalTopLanguages,
         contributionStreak: contributionStats.contributionStreak,
         todayCommits: contributionStats.todayCommits || todayCommits
       }
