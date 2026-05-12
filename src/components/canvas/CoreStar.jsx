@@ -9,8 +9,24 @@ export default function CoreStar({ data }) {
   const auraRef = useRef();
   const [hovered, setHovered] = useState(false);
   
-  // Load avatar as texture
-  const texture = useLoader(THREE.TextureLoader, data.avatarUrl);
+  // Load avatar as texture with CORS support and fallback
+  const [texture, setTexture] = useState(null);
+  
+  React.useEffect(() => {
+    if (!data.avatarUrl) return;
+    
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin('anonymous');
+    loader.load(
+      data.avatarUrl,
+      (tex) => setTexture(tex),
+      undefined,
+      (err) => {
+        console.warn("Failed to load avatar texture, using fallback color:", err);
+        setTexture(null);
+      }
+    );
+  }, [data.avatarUrl]);
   
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
@@ -45,8 +61,9 @@ export default function CoreStar({ data }) {
         <sphereGeometry args={[1.5, 64, 64]} />
         <meshStandardMaterial 
           map={texture}
-          emissive="#ffffff"
-          emissiveIntensity={0.1}
+          color={texture ? "#ffffff" : "#38bdf8"}
+          emissive={texture ? "#ffffff" : "#38bdf8"}
+          emissiveIntensity={texture ? 0.1 : 0.5}
           roughness={0.3}
           metalness={0.7}
         />
