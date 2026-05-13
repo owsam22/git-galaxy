@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCcw, Download, X, ChevronDown, ChevronUp, MapPin, Users, Search, ExternalLink } from 'lucide-react';
+import { RefreshCcw, Download, X, ChevronDown, ChevronUp, MapPin, Users, Search, ExternalLink, Loader2 } from 'lucide-react';
 import SearchScreen from './SearchScreen';
 import SnapshotTool from './SnapshotTool';
 import ShareModal from './ShareModal';
@@ -14,6 +14,7 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
   const [isSearching, setIsSearching] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [searchError, setSearchError] = useState(null);
   const searchRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -31,6 +32,7 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
     e.preventDefault();
     if (!topSearch.trim() || isSearching) return;
     setIsSearching(true);
+    setSearchError(null);
     setSearchFocused(false);
     try {
       const rawData = await fetchGalaxyData(topSearch, true);
@@ -39,7 +41,9 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
       setTopSearch('');
     } catch (err) {
       console.error('Top search error:', err);
-      onDataLoaded(null);
+      setSearchError(err.message?.includes('timeout') ? 'Timeout: GitHub is slow today' : 'User not found');
+      // Clear error after 3s
+      setTimeout(() => setSearchError(null), 3000);
     } finally {
       setIsSearching(false);
     }
@@ -47,6 +51,7 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
 
   const handleQuickSearch = async (username) => {
     setTopSearch(username);
+    setSearchError(null);
     setSearchFocused(false);
     setIsSearching(true);
     try {
@@ -55,7 +60,8 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
       onDataLoaded(mappedData);
       setTopSearch('');
     } catch (err) {
-      onDataLoaded(null);
+      setSearchError('Search failed');
+      setTimeout(() => setSearchError(null), 3000);
     } finally {
       setIsSearching(false);
     }
@@ -103,14 +109,26 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
 
               <form onSubmit={handleTopSearch} style={{ width: '100%', position: 'relative', zIndex: 92 }}>
                 <div style={{ position: 'relative', width: '100%' }}>
-                  <Search
-                    size={16}
-                    style={{
-                      position: 'absolute', left: '14px', top: '50%',
-                      transform: 'translateY(-50%)',
-                      color: 'var(--text-secondary)', opacity: 0.7, pointerEvents: 'none',
-                    }}
-                  />
+                  {isSearching ? (
+                    <Loader2
+                      size={16}
+                      className="animate-spin"
+                      style={{
+                        position: 'absolute', left: '14px', top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: 'var(--accent)', zIndex: 5
+                      }}
+                    />
+                  ) : (
+                    <Search
+                      size={16}
+                      style={{
+                        position: 'absolute', left: '14px', top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: 'var(--text-secondary)', opacity: 0.7, pointerEvents: 'none',
+                      }}
+                    />
+                  )}
                   <input
                     type="text"
                     placeholder="Search users…"
@@ -119,8 +137,21 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
                     onChange={(e) => setTopSearch(e.target.value)}
                     onFocus={() => isBackendLive && setSearchFocused(true)}
                     disabled={isSearching || !isBackendLive}
-                    style={{ width: '100%', opacity: isBackendLive ? 1 : 0.6 }}
+                    style={{ width: '100%', opacity: isBackendLive ? 1 : 0.6, border: searchError ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.1)' }}
                   />
+                  {searchError && (
+                    <div style={{ 
+                      position: 'absolute', 
+                      top: 'calc(100% + 4px)', 
+                      left: '12px', 
+                      color: '#ef4444', 
+                      fontSize: '0.7rem',
+                      fontWeight: 500,
+                      pointerEvents: 'none'
+                    }}>
+                      {searchError}
+                    </div>
+                  )}
                 </div>
               </form>
 
