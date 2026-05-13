@@ -107,28 +107,16 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
                 )}
               </AnimatePresence>
 
-              <form onSubmit={handleTopSearch} style={{ width: '100%', position: 'relative', zIndex: 92 }}>
-                <div style={{ position: 'relative', width: '100%' }}>
-                  {isSearching ? (
-                    <Loader2
-                      size={16}
-                      className="animate-spin"
-                      style={{
-                        position: 'absolute', left: '14px', top: '50%',
-                        transform: 'translateY(-50%)',
-                        color: 'var(--accent)', zIndex: 5
-                      }}
-                    />
-                  ) : (
-                    <Search
-                      size={16}
-                      style={{
-                        position: 'absolute', left: '14px', top: '50%',
-                        transform: 'translateY(-50%)',
-                        color: 'var(--text-secondary)', opacity: 0.7, pointerEvents: 'none',
-                      }}
-                    />
-                  )}
+              <form onSubmit={handleTopSearch} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative', zIndex: 92 }}>
+                <div style={{ position: 'relative', flex: 1 }}>
+                  <Search
+                    size={16}
+                    style={{
+                      position: 'absolute', left: '14px', top: '50%',
+                      transform: 'translateY(-50%)',
+                      color: 'var(--text-secondary)', opacity: 0.7, pointerEvents: 'none',
+                    }}
+                  />
                   <input
                     type="text"
                     placeholder="Search users…"
@@ -153,6 +141,15 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
                     </div>
                   )}
                 </div>
+                {isSearching && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    style={{ flexShrink: 0 }}
+                  >
+                    <Loader2 size={18} className="animate-spin" style={{ color: 'var(--accent)' }} />
+                  </motion.div>
+                )}
               </form>
 
               {/* Recent users dropdown */}
