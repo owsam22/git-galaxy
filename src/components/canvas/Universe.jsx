@@ -43,7 +43,7 @@ const CameraController = ({ targetPosition }) => {
   return null;
 };
 
-const Scene = ({ data, galaxyUsers, onStarClick, viewingUser, onPlanetClick }) => {
+const Scene = ({ data, galaxyUsers, onStarClick, viewingUser, onPlanetClick, isEmbed }) => {
   if (!data) return null;
   
   // Find the position of the user being viewed
@@ -58,8 +58,10 @@ const Scene = ({ data, galaxyUsers, onStarClick, viewingUser, onPlanetClick }) =
       {/* Background stars (static) */}
       <Stars radius={200} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
       
-      {/* Multi-user background stars (interactive) */}
-      <BackgroundStars users={galaxyUsers.filter(u => u.username !== data.core.username)} onStarClick={onStarClick} />
+      {/* Multi-user background stars – hidden in embed mode to prevent user-switching */}
+      {!isEmbed && (
+        <BackgroundStars users={galaxyUsers.filter(u => u.username !== data.core.username)} onStarClick={onStarClick} />
+      )}
       
       {/* Shooting stars from today's contributions */}
       <ShootingStars count={data.todayCommits} />
@@ -93,7 +95,7 @@ const Scene = ({ data, galaxyUsers, onStarClick, viewingUser, onPlanetClick }) =
   );
 };
 
-export default function Universe({ data, galaxyUsers = [], onStarClick, viewingUser, onPlanetClick }) {
+export default function Universe({ data, galaxyUsers = [], onStarClick, viewingUser, onPlanetClick, isEmbed = false }) {
   return (
     <Canvas
       camera={{ position: [0, 20, 40], fov: 45 }}
@@ -109,6 +111,7 @@ export default function Universe({ data, galaxyUsers = [], onStarClick, viewingU
         onStarClick={onStarClick} 
         viewingUser={viewingUser}
         onPlanetClick={onPlanetClick}
+        isEmbed={isEmbed}
       />
     </Canvas>
   );
