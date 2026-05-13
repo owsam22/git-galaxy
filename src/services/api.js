@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  timeout: 5000 // 5 seconds
+  timeout: 15000 // 15 seconds
 });
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
