@@ -1,17 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCcw, Share2, Download, X, ChevronDown, ChevronUp, MapPin, Link, Users, Search } from 'lucide-react';
+import { RefreshCcw, Download, X, ChevronDown, ChevronUp, MapPin, Users, Search, ExternalLink } from 'lucide-react';
 import SearchScreen from './SearchScreen';
 import SnapshotTool from './SnapshotTool';
+import ShareModal from './ShareModal';
 import { fetchGalaxyData } from '../../services/api';
 import { mapGitHubDataToUniverse } from '../../services/dataMapping';
 
-export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount = 0, galaxyUsers = [], isBackendLive = true }) {
+export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount = 0, galaxyUsers = [], isBackendLive = true, isEmbed = false }) {
   const [snapshotPreview, setSnapshotPreview] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [topSearch, setTopSearch] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const searchRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -64,9 +66,9 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
   return (
     <div style={{ width: '100%', height: '100%', pointerEvents: 'none' }}>
 
-      {/* ── Top Navigation ── */}
+      {/* ── Top Navigation (hidden in embed mode) ── */}
       <AnimatePresence>
-        {data && (
+        {data && !isEmbed && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -291,7 +293,8 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
 
                       {/* Actions */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: isEmbed ? '1fr' : '1fr 1fr', gap: '0.5rem' }}>
+                          {!isEmbed && (
                            <button
                             onClick={() => onDataLoaded(null)}
                             className="action-button secondary"
@@ -305,22 +308,28 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
                             <RefreshCcw size={14} />
                             {isBackendLive ? 'Find Another' : 'Offline'}
                           </button>
+                          )}
+                          {!isEmbed && (
                           <button
-                            onClick={async () => {
-                              const shareUrl = `${window.location.origin}${window.location.pathname}?user=${data.core.username}`;
-                              if (navigator.share) {
-                                try { await navigator.share({ title: 'Git Galaxy', url: shareUrl }); } catch (e) {}
-                              } else {
-                                navigator.clipboard.writeText(shareUrl);
-                                alert('Link copied!');
-                              }
-                            }}
+                            onClick={() => setShareModalOpen(true)}
                             className="action-button primary"
                             style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center', fontSize: '0.82rem' }}
                           >
-                            <Share2 size={14} />
                             Share
                           </button>
+                          )}
+                          {isEmbed && (
+                          <a
+                            href={`${window.location.origin}/${data.core.username}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="action-button primary"
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center', fontSize: '0.82rem', textDecoration: 'none' }}
+                          >
+                            <ExternalLink size={14} />
+                            Open GitGalaxy
+                          </a>
+                          )}
                         </div>
                       </div>
 
@@ -339,9 +348,9 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
         )}
       </AnimatePresence>
 
-      {/* ── Snapshot button – desktop bottom-right ── */}
+      {/* ── Snapshot button – desktop bottom-right (hidden in embed) ── */}
       <AnimatePresence>
-        {data && (
+        {data && !isEmbed && (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -396,22 +405,67 @@ export default function Overlay({ data, onDataLoaded, onCloseSearch, userCount =
         )}
       </AnimatePresence>
 
+      {/* ── Share Modal ── */}
+      <AnimatePresence>
+        {shareModalOpen && data && (
+          <ShareModal
+            username={data.core.username}
+            onClose={() => setShareModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* ── Footer ── */}
-      <div
-        className="no-capture site-footer"
-        style={{
-          position: 'absolute',
-          bottom: 0, left: 0, width: '100%',
-          textAlign: 'center',
-          color: 'var(--text-secondary)',
-          fontSize: '0.78rem',
-          pointerEvents: 'auto',
-          zIndex: 20,
-          padding: '0.6rem',
-        }}
-      >
-        developed by <a href="https://github.com/owsam22" target="_blank" rel="noopener noreferrer" className="footer-link">@owsam22</a>
-      </div>
+      {isEmbed ? (
+        /* Embed: subtle powered-by badge, bottom-right */
+        <a
+          href={`${window.location.origin}/${data?.core?.username || ''}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            position: 'absolute',
+            bottom: '10px',
+            right: '12px',
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+            padding: '4px 10px',
+            background: 'rgba(5,7,10,0.7)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '100px',
+            color: 'var(--text-secondary)',
+            fontSize: '0.62rem',
+            textDecoration: 'none',
+            letterSpacing: '0.5px',
+            transition: 'all 0.2s',
+            pointerEvents: 'auto',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(56,189,248,0.4)'; e.currentTarget.style.color = 'var(--accent)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+        >
+          <span style={{ opacity: 0.7 }}>⚡</span>
+          <span>GitGalaxy</span>
+          <ExternalLink size={9} />
+        </a>
+      ) : (
+        <div
+          className="no-capture site-footer"
+          style={{
+            position: 'absolute',
+            bottom: 0, left: 0, width: '100%',
+            textAlign: 'center',
+            color: 'var(--text-secondary)',
+            fontSize: '0.78rem',
+            pointerEvents: 'auto',
+            zIndex: 20,
+            padding: '0.6rem',
+          }}
+        >
+          developed by <a href="https://github.com/owsam22" target="_blank" rel="noopener noreferrer" className="footer-link">@owsam22</a>
+        </div>
+      )}
     </div>
   );
 }
