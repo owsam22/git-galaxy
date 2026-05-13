@@ -5,19 +5,23 @@ import { X, ExternalLink, Star, GitFork, Eye, Calendar, Code } from 'lucide-reac
 export default function RepoModal({ repo, onClose }) {
   if (!repo) return null;
 
+  const isMobile = window.innerWidth < 640;
+  
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, x: 100 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 100 }}
+        initial={{ opacity: 0, x: isMobile ? 0 : 100, y: isMobile ? 100 : 0 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        exit={{ opacity: 0, x: isMobile ? 0 : 100, y: isMobile ? 100 : 0 }}
         className="glass-panel repo-modal interactive-ui"
         style={{
           position: 'fixed',
-          top: '2rem',
-          right: '2rem',
-          width: '380px',
-          maxHeight: 'calc(100vh - 4rem)',
+          top: isMobile ? 'auto' : '2rem',
+          right: isMobile ? '0' : '2rem',
+          bottom: isMobile ? '0' : 'auto',
+          left: isMobile ? '0' : 'auto',
+          width: isMobile ? '100%' : '380px',
+          maxHeight: isMobile ? '80vh' : 'calc(100vh - 4rem)',
           zIndex: 1000,
           padding: '1.5rem',
           display: 'flex',
@@ -25,7 +29,8 @@ export default function RepoModal({ repo, onClose }) {
           gap: '1.2rem',
           border: '1px solid rgba(255, 255, 255, 0.2)',
           boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
-          overflowY: 'auto'
+          overflowY: 'auto',
+          borderRadius: isMobile ? '24px 24px 0 0' : '16px'
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
