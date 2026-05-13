@@ -49,7 +49,7 @@ export const mapGitHubDataToUniverse = (data) => {
       forks: repo.forks_count || 0,
       language: repo.language,
       size: Math.min(calculatedSize, 2.0),
-      distance: 5 + index * 1.2 + (daysSincePush * 0.005), // Increased distance for clarity
+      distance: 15 + index * 4.0 + (daysSincePush * 0.01), // Very safe distance and spacing
       isActive: daysSincePush < 90,
       heat: Math.min(repoCommits / 5, 2),
       lastPush: repo.pushed_at,
@@ -90,11 +90,21 @@ export const mapGitHubDataToUniverse = (data) => {
 export const mapUserToBackgroundStar = (user) => {
   const { username, profile, stats } = user;
   
-  // Deterministic position based on username hash
-  const hash = Array.from(username).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const phi = (hash % 100) / 100 * Math.PI * 2;
-  const theta = ((hash * 7) % 100) / 100 * Math.PI;
-  const radius = 60 + (hash % 40); // Between 60 and 100 units away
+  // Robust hash function for better distribution
+  const hashString = (str) => {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+    }
+    return Math.abs(h);
+  };
+
+  const hash = hashString(username);
+  
+  // Use golden ratio or large primes for better distribution
+  const phi = (hash * 0.618033988749895 % 1) * Math.PI * 2;
+  const theta = (hash * 0.284749283749283 % 1) * Math.PI;
+  const radius = 200 + (hash % 100); // Between 200 and 300 units away to completely clear planetary system
   
   const x = radius * Math.sin(theta) * Math.cos(phi);
   const y = radius * Math.sin(theta) * Math.sin(phi);
