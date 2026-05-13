@@ -49,7 +49,7 @@ export const mapGitHubDataToUniverse = (data) => {
       forks: repo.forks_count || 0,
       language: repo.language,
       size: Math.min(calculatedSize, 2.0),
-      distance: 15 + index * 4.0 + (daysSincePush * 0.01), // Very safe distance and spacing
+      distance: 5 + index * 1.8 + (daysSincePush * 0.005), // Balanced distance and spacing
       isActive: daysSincePush < 90,
       heat: Math.min(repoCommits / 5, 2),
       lastPush: repo.pushed_at,
@@ -104,7 +104,7 @@ export const mapUserToBackgroundStar = (user) => {
   // Use golden ratio or large primes for better distribution
   const phi = (hash * 0.618033988749895 % 1) * Math.PI * 2;
   const theta = (hash * 0.284749283749283 % 1) * Math.PI;
-  const radius = 200 + (hash % 100); // Between 200 and 300 units away to completely clear planetary system
+  const radius = 100 + (hash % 60); // Balanced background star radius to keep them visible but distinct
   
   const x = radius * Math.sin(theta) * Math.cos(phi);
   const y = radius * Math.sin(theta) * Math.sin(phi);
