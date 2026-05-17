@@ -7,13 +7,13 @@ export default function Planet({ data, onClick }) {
   const planetGroupRef = useRef();
   const planetRef = useRef();
   const [hovered, setHovered] = useState(false);
-  
-  // Assign a random starting angle
+
+  // Track pointer position to distinguish drag vs click
+  const pointerDown = useRef(null);
+
   const angle = useMemo(() => Math.random() * Math.PI * 2, []);
-  // Orbit speed inversely proportional to distance
   const speed = useMemo(() => 0.2 / data.distance, [data.distance]);
-  
-  // Choose a basic color depending on language (fallback to gray)
+
   const colors = {
     JavaScript: '#f1e05a',
     TypeScript: '#3178c6',
@@ -31,7 +31,6 @@ export default function Planet({ data, onClick }) {
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     if (planetGroupRef.current) {
-      // Calculate new position (anticlockwise)
       const currentAngle = angle - t * speed;
       planetGroupRef.current.position.x = Math.cos(currentAngle) * data.distance;
       planetGroupRef.current.position.z = Math.sin(currentAngle) * data.distance;
@@ -46,29 +45,50 @@ export default function Planet({ data, onClick }) {
       {/* Orbit Ring */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[data.distance - 0.02, data.distance + 0.02, 64]} />
-        <meshBasicMaterial 
-          color={data.isContributed ? "#38bdf8" : "#ffffff"} 
-          transparent 
-          opacity={data.isContributed ? 0.15 : 0.05} 
-          side={THREE.DoubleSide} 
+        <meshBasicMaterial
+          color={data.isContributed ? '#38bdf8' : '#ffffff'}
+          transparent
+          opacity={data.isContributed ? 0.15 : 0.05}
+          side={THREE.DoubleSide}
         />
       </mesh>
 
-      {/* The Planet itself */}
       <group ref={planetGroupRef}>
-        <mesh 
-          ref={planetRef}
-          onPointerOver={() => setHovered(true)}
-          onPointerOut={() => setHovered(false)}
-          onClick={(e) => {
+        {/* ── Large invisible hitbox for reliable clicking ── */}
+        <mesh
+          onPointerDown={(e) => {
             e.stopPropagation();
-            if (onClick) onClick(data);
+            pointerDown.current = { x: e.clientX, y: e.clientY };
+          }}
+          onPointerUp={(e) => {
+            e.stopPropagation();
+            if (!pointerDown.current) return;
+            const dx = e.clientX - pointerDown.current.x;
+            const dy = e.clientY - pointerDown.current.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 5 && onClick) onClick(data); // only fire if not a drag
+            pointerDown.current = null;
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            document.body.style.cursor = 'pointer';
+            setHovered(true);
+          }}
+          onPointerOut={() => {
+            document.body.style.cursor = 'default';
+            setHovered(false);
           }}
         >
+          <sphereGeometry args={[data.size * 3, 8, 8]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
+
+        {/* ── Visual planet mesh ── */}
+        <mesh ref={planetRef}>
           <sphereGeometry args={[data.size, 32, 32]} />
-          <meshStandardMaterial 
-            color={color} 
-            roughness={data.isContributed ? 0.1 : 0.6} 
+          <meshStandardMaterial
+            color={color}
+            roughness={data.isContributed ? 0.1 : 0.6}
             metalness={data.isContributed ? 0.9 : 0.4}
             emissive={color}
             emissiveIntensity={data.isContributed ? 0.5 : (data.heat > 0 ? 0.3 + data.heat : 0.1)}
@@ -76,35 +96,34 @@ export default function Planet({ data, onClick }) {
           />
         </mesh>
 
-        {/* Dynamic Glow for Active/High-Commit Planets */}
+        {/* Dynamic glow for hot/active planets */}
         {(data.heat > 0.5 || data.isActive) && (
           <mesh scale={[1.2, 1.2, 1.2]}>
             <sphereGeometry args={[data.size, 16, 16]} />
-            <meshBasicMaterial 
-              color={color} 
-              transparent 
-              opacity={Math.min(0.1 + (data.heat * 0.1), 0.3)} 
+            <meshBasicMaterial
+              color={color}
+              transparent
+              opacity={Math.min(0.1 + data.heat * 0.1, 0.3)}
               blending={THREE.AdditiveBlending}
             />
           </mesh>
         )}
 
-        {/* Extra Aura for very hot planets */}
         {data.heat > 1.2 && (
           <mesh scale={[1.4, 1.4, 1.4]}>
             <sphereGeometry args={[data.size, 16, 16]} />
-            <meshBasicMaterial 
-              color={color} 
-              transparent 
-              opacity={0.05} 
-              blending={THREE.AdditiveBlending}
-            />
+            <meshBasicMaterial color={color} transparent opacity={0.05} blending={THREE.AdditiveBlending} />
           </mesh>
         )}
 
-        {/* Label on Hover */}
+        {/* ── Hover tooltip — pointerEvents disabled so it never blocks clicks ── */}
         {hovered && (
-          <Html distanceFactor={15} center>
+          <Html
+            distanceFactor={15}
+            center
+            style={{ pointerEvents: 'none' }}
+            occlude
+          >
             <div className="glass-panel" style={{
               padding: '8px 12px',
               borderRadius: '8px',
@@ -117,7 +136,7 @@ export default function Planet({ data, onClick }) {
               gap: '4px',
               border: `1px solid ${color}`,
               boxShadow: `0 0 15px ${color}33`,
-              backdropFilter: 'blur(10px)'
+              backdropFilter: 'blur(10px)',
             }}>
               <div style={{ fontWeight: 600, fontSize: '14px' }}>{data.name}</div>
               <div style={{ display: 'flex', gap: '8px', opacity: 0.8, fontSize: '11px' }}>
