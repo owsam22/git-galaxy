@@ -9,28 +9,28 @@ export const demoData = {
       todayCommits: 42,
       topLanguages: [
         { name: "JavaScript", color: "#f7df1e", percentage: 40 },
-        { name: "React", color: "#61dafb", percentage: 30 },
-        { name: "Three.js", color: "#000000", percentage: 20 },
-        { name: "Node.js", color: "#339933", percentage: 10 }
+        { name: "React",      color: "#61dafb", percentage: 30 },
+        { name: "Three.js",   color: "#6644aa", percentage: 20 },
+        { name: "Node.js",    color: "#339933", percentage: 10 }
       ]
     },
     brightness: 2.5,
     pulseSpeed: 1.2,
-    followers: 369,
-    following: 22,
-    publicRepos: 100,
-    bio: "The demo galaxy of Git Galaxy. Waiting for backend to awaken...",
-    location: "The Cloud",
+    followers: 0,
+    following: 0,
+    publicRepos: 4,
+    bio: "Backend is waking up — explore the galaxy while you wait.",
+    location: "The Observable Universe",
     company: "Open Source",
-    blog: "https://github.com/owsam22",
-    twitter: "owsam22",
+    blog: "",
+    twitter: "",
     createdAt: new Date().toISOString()
   },
   planets: [
     {
       id: 1,
       name: "Universe-Core",
-      description: "Demo Repository for the Git Galaxy visualization engine.",
+      description: "Demo repository for the Git Galaxy visualization engine.",
       url: "#",
       stars: 450,
       forks: 120,
