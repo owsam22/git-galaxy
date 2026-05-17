@@ -1,5 +1,20 @@
-# 🌌 Git Galaxy — Multi-User Universe
+# 🌌 Git Galaxy — Multi-User Universe 
 
+
+> ### 🚧 **Currently Building — This project is actively under development.**
+> **Git Galaxy** is currently under active construction and continuous iteration. Features are being built, the universe is expanding, and updates are pushed regularly. Stay tuned for live changes!
+
+
+
+
+<p align="center">
+  <img src="https://camo.githubusercontent.com/d972b3fdd96f5bcda3cb22db4be78c78db577b6a4aa58d779523cc1f598f1e8d/68747470733a2f2f63646e2e6472696262626c652e636f6d2f75736572732f3733303730332f73637265656e73686f74732f363538313234332f6176656e746f2e676966" alt="Git Galaxy Animation" width="600"/>
+</p>
+
+---
+
+
+### Git Galaxy :-)
 **Git Galaxy** transforms the GitHub ecosystem into a persistent, interactive 3D universe. Every repository becomes a planet, and every user becomes a unique star in a vast, navigable star field. 
 
 [Live Demo Placeholder](https://git-galaxy.netlify.app) 
