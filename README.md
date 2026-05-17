@@ -17,7 +17,7 @@
 ### Git Galaxy :-)
 **Git Galaxy** transforms the GitHub ecosystem into a persistent, interactive 3D universe. Every repository becomes a planet, and every user becomes a unique star in a vast, navigable star field. 
 
-[Live Demo Placeholder](https://git-galaxy.netlify.app) 
+[Live Demo ⚡](https://git-galaxy.netlify.app) 
 
 ---
 
