@@ -66,5 +66,8 @@ MIT License — Developed by [owsam22](https://github.com/owsam22)
 
 ---
 
+💫 **If you enjoy exploring new ideas, please ⭐ star the repo and use Git Galaxy to visualize your GitHub universe!**  
+Your support helps keep development active and the universe expanding.
+---
 ### Tags
 #GitHub #ThreeJS #React #DataVisualization #OpenSource #FullStack #WebDesign #3D #Universe #GitGalaxy
