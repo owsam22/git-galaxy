@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, X, ChevronDown, ChevronUp, MapPin, Users, Search, ExternalLink, Loader2, Telescope } from 'lucide-react';
-import SnapshotTool from './SnapshotTool';
+import { X, ChevronDown, ChevronUp, MapPin, Users, Search, ExternalLink, Loader2, Telescope, Volume2, VolumeX } from 'lucide-react';
 import ShareModal from './ShareModal';
+import Footer from './Footer';
 import { fetchGalaxyData } from '../../services/api';
 import { mapGitHubDataToUniverse } from '../../services/dataMapping';
+import backgroundMusic from '../../assets/music/snowfall.mp3';
 
 export default function Overlay({
   data,
@@ -17,7 +18,6 @@ export default function Overlay({
   isEmbed = false,
   isFreeRoam = true,
 }) {
-  const [snapshotPreview, setSnapshotPreview] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [topSearch, setTopSearch] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -25,6 +25,44 @@ export default function Overlay({
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [searchError, setSearchError] = useState(null);
   const searchRef = useRef(null);
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+  const hasInteractedRef = useRef(false);
+
+  useEffect(() => {
+    const audio = new Audio(backgroundMusic);
+    audio.loop = true;
+    audio.volume = 0.3;
+    audioRef.current = audio;
+    
+    const tryPlay = () => {
+      if (hasInteractedRef.current) return;
+      
+      const playAttempt = audio.play();
+      if (playAttempt !== undefined) {
+        playAttempt.then(() => {
+          setIsPlaying(true);
+          hasInteractedRef.current = true;
+          document.removeEventListener('click', tryPlay);
+          document.removeEventListener('keydown', tryPlay);
+        }).catch(() => {
+          setIsPlaying(false);
+        });
+      }
+    };
+
+    tryPlay();
+    document.addEventListener('click', tryPlay);
+    document.addEventListener('keydown', tryPlay);
+
+    return () => {
+      document.removeEventListener('click', tryPlay);
+      document.removeEventListener('keydown', tryPlay);
+      audio.pause();
+      audio.src = '';
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -70,6 +108,18 @@ export default function Overlay({
       setTimeout(() => setSearchError(null), 3000);
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      hasInteractedRef.current = true;
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(console.error);
+      }
+      setIsPlaying(!isPlaying);
     }
   };
 
@@ -143,6 +193,16 @@ export default function Overlay({
                   <Loader2 size={18} className="animate-spin" style={{ color: 'var(--accent)' }} />
                 </motion.div>
               )}
+              {/* ── Music Controls (Mobile) ── */}
+              <button
+                type="button"
+                onClick={toggleMusic}
+                className={`glass-panel neon-music-btn music-mobile ${isPlaying ? 'playing' : ''}`}
+                title={isPlaying ? "Mute Music" : "Play Music"}
+                style={{ flexShrink: 0, padding: '10px' }}
+              >
+                {isPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
+              </button>
             </form>
 
             {/* Recent users dropdown */}
@@ -208,7 +268,8 @@ export default function Overlay({
             }}
           >
             <div className="glass-panel" style={{
-              padding: '10px 18px',
+              marginRight: '50px',
+              padding: '10px 25px',
               borderRadius: '100px',
               display: 'flex',
               alignItems: 'center',
@@ -358,47 +419,26 @@ export default function Overlay({
         )}
       </AnimatePresence>
 
-      {/* ── Snapshot button ── */}
-      <AnimatePresence>
-        {data && !isEmbed && !isFreeRoam && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ delay: 1, duration: 0.6 }}
-            className="interactive-ui snapshot-desktop"
-          >
-            <SnapshotTool username={data.core.username} onSnapshot={setSnapshotPreview} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Snapshot preview modal ── */}
-      <AnimatePresence>
-        {snapshotPreview && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="no-capture"
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '2rem', pointerEvents: 'auto' }}
-          >
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-panel preview-container" style={{ maxWidth: '90%', maxHeight: '75%', overflow: 'hidden', padding: '4px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <img src={snapshotPreview} alt="Snapshot Preview" style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '4px' }} />
-            </motion.div>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-              <button
-                onClick={() => { const link = document.createElement('a'); link.download = `${data.core.username}-galaxy.png`; link.href = snapshotPreview; link.click(); setSnapshotPreview(null); }}
-                className="action-button primary"
-                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-              >
-                <Download size={18} /> Save Image
-              </button>
-              <button onClick={() => setSnapshotPreview(null)} className="action-button secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <X size={18} /> Cancel
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── Music Controls (Desktop) ── */}
+      <div
+        className="interactive-ui music-desktop"
+        style={{
+          position: 'absolute',
+          bottom: '2.4rem',
+          right: '2rem',
+          pointerEvents: 'auto',
+          zIndex: 100,
+        }}
+      >
+        <button
+          onClick={toggleMusic}
+          className={`glass-panel neon-music-btn ${isPlaying ? 'playing' : ''}`}
+          title={isPlaying ? "Mute Music" : "Play Music"}
+          style={{ padding: '10px' }}
+        >
+          {isPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
+        </button>
+      </div>
 
       {/* ── Share Modal ── */}
       <AnimatePresence>
@@ -408,24 +448,7 @@ export default function Overlay({
       </AnimatePresence>
 
       {/* ── Footer ── */}
-      {isEmbed ? (
-        <a
-          href={`${window.location.origin}/${data?.core?.username || ''}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ position: 'absolute', bottom: '10px', right: '12px', zIndex: 50, display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 10px', background: 'rgba(5,7,10,0.7)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '100px', color: 'var(--text-secondary)', fontSize: '0.62rem', textDecoration: 'none', letterSpacing: '0.5px', transition: 'all 0.2s', pointerEvents: 'auto' }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(56,189,248,0.4)'; e.currentTarget.style.color = 'var(--accent)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-        >
-          <span style={{ opacity: 0.7 }}>⚡</span>
-          <span>GitGalaxy</span>
-          <ExternalLink size={9} />
-        </a>
-      ) : (
-        <div className="no-capture site-footer" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.78rem', pointerEvents: 'auto', zIndex: 20, padding: '0.6rem' }}>
-          developed by <a href="https://github.com/owsam22" target="_blank" rel="noopener noreferrer" className="footer-link">@owsam22</a>
-        </div>
-      )}
+      <Footer isEmbed={isEmbed} data={data} />
     </div>
   );
 }
