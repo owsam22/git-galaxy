@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Footer({ isEmbed, data }) {
   return isEmbed ? (
@@ -18,6 +19,8 @@ export default function Footer({ isEmbed, data }) {
   ) : (
     <div className="no-capture site-footer" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.78rem', pointerEvents: 'auto', zIndex: 20, padding: '0.6rem' }}>
       developed by <a href="https://github.com/owsam22" target="_blank" rel="noopener noreferrer" className="footer-link">@owsam22</a>
+      <span style={{ margin: '0 8px', opacity: 0.5 }}>•</span>
+      <Link to="/about" className="footer-link" style={{ textDecoration: 'none' }}>About</Link>
     </div>
   );
 }
