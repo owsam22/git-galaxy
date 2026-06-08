@@ -35,10 +35,10 @@ export default function Overlay({
     audio.loop = true;
     audio.volume = 0.3;
     audioRef.current = audio;
-    
+
     const tryPlay = () => {
       if (hasInteractedRef.current) return;
-      
+
       const playAttempt = audio.play();
       if (playAttempt !== undefined) {
         playAttempt.then(() => {
@@ -331,25 +331,7 @@ export default function Overlay({
                 <img src={data.core.avatarUrl} alt="Avatar" style={{ width: '38px', height: '38px', borderRadius: '50%', flexShrink: 0 }} crossOrigin="anonymous" />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    <a
-                      href={`https://github.com/${data.core.username}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        color: 'var(--text-primary)',
-                        textDecoration: 'none',
-                        transition: 'color 0.2s',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        maxWidth: '100%',
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent)'}
-                      onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                    >
-                      {data.core.username}
-                      <ExternalLink size={12} style={{ opacity: 0.8, flexShrink: 0 }} />
-                    </a>
+                    {data.core.username}
                   </div>
                   <div style={{ display: 'flex', gap: '10px', marginTop: '2px' }}>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>🔥 {data.core.stats?.contributionStreak || 0} streak</span>
