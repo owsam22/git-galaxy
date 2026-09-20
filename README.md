@@ -17,7 +17,7 @@
 ### Git Galaxy :-)
 **Git Galaxy** transforms the GitHub ecosystem into a persistent, interactive 3D universe. Every repository becomes a planet, and every user becomes a unique star in a vast, navigable star field. 
 
-[Live Demo ⚡](https://git-galaxy.netlify.app) 
+[Live Demo ⚡](https://gitgalaxy.owsam22.com) 
 
 ---
 
@@ -41,7 +41,7 @@
 
 You can jump into the universe immediately via the live link:
 
-### 🔗 [Enter the Git Galaxy](https://git-galaxy.netlify.app)
+### 🔗 [Enter the Git Galaxy](https://gitgalaxy.owsam22.com)
 
 1. **Search**: Enter any GitHub username to generate their unique star system.
 2. **Navigate**: Use your mouse to rotate (360°), zoom, and pan around the galaxy.
