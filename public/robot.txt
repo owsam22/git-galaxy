@@ -1,6 +1,0 @@
-
-User-agent: *
-Allow: /
-
-Sitemap: https://gitgalaxy.owsam22.com/sitemap.xml
-  
