@@ -140,10 +140,23 @@ export default function Overlay({
           <div
             className="logo-text interactive-ui"
             onClick={onGoFreeRoam}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', display: 'inline-flex', flexDirection: 'column' }}
             title="Back to galaxy view"
           >
-            GIT<b>GALAXY</b>
+            <div>
+              GIT<b>GALAXY</b>
+            </div>
+            <span
+              style={{
+                fontSize: '10px',
+                textAlign: 'right',
+                opacity: 0.7,
+                marginTop: '-2px',
+                letterSpacing: '3.8px',
+              }}
+            >
+              by owsam22
+            </span>
           </div>
 
           {/* Search bar */}
