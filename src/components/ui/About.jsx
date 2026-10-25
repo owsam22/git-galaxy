@@ -229,7 +229,7 @@ export default function About() {
             <a href="https://linkedin.com/in/owsam22" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', transition: 'color 0.2s', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>LinkedIn</a>
             <a href="https://portfolio.owsam22.com/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', transition: 'color 0.2s', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>Portfolio</a>
           </div>
-          <p style={{ fontSize: '0.85rem' }}>© {new Date().getFullYear()} Git Galaxy by Samarpan Jayswal (owsam22). All rights reserved.</p>
+          <p style={{ fontSize: '0.85rem' }}>© {new Date().getFullYear()} Git Galaxy by Samarpan Jayswal | <a href="https://owsam22.com/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', transition: 'color 0.2s', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>owsam22.com</a>. All rights reserved.</p>
         </footer>
       </div>
     </div>
