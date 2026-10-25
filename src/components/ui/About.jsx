@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Code, Music, Share2, Code2, ExternalLink, Telescope, Home } from 'lucide-react';
+import { ArrowLeft, Code, Music, Share2, Code2, ExternalLink, Telescope } from 'lucide-react';
 import SEO from '../SEO';
 
 export default function About() {
@@ -61,9 +61,70 @@ export default function About() {
           </Link>
         </nav>
 
-        <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '2rem', background: 'linear-gradient(to right, #fff, #38bdf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          About Git Galaxy
-        </h1>
+        {/* Header / Brand Hero */}
+        <header style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1.25rem',
+          marginBottom: '2.5rem',
+          paddingBottom: '1.5rem',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+        }}>
+          <div style={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '64px',
+            height: '64px',
+            borderRadius: '18px',
+            background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(8, 13, 24, 0.85) 100%)',
+            border: '1px solid rgba(56, 189, 248, 0.35)',
+            boxShadow: '0 0 25px rgba(56, 189, 248, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+            flexShrink: 0,
+            overflow: 'hidden'
+          }}>
+            <img
+              src="/favicon.svg"
+              alt="Git Galaxy Logo"
+              style={{
+                width: '46px',
+                height: '46px',
+                objectFit: 'contain',
+                filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5))'
+              }}
+            />
+          </div>
+          <div>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              color: '#38bdf8',
+              marginBottom: '4px'
+            }}>
+              <span>Git Galaxy</span>
+              <span style={{ opacity: 0.5 }}>•</span>
+              <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Overview &amp; Docs</span>
+            </div>
+            <h1 style={{
+              fontSize: 'clamp(2rem, 5vw, 2.75rem)',
+              fontWeight: 800,
+              margin: 0,
+              background: 'linear-gradient(to right, #ffffff 30%, #93c5fd 70%, #38bdf8 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.5px',
+              lineHeight: 1.15
+            }}>
+              About Git Galaxy
+            </h1>
+          </div>
+        </header>
 
         <main style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           {/* About Section */}
@@ -161,8 +222,8 @@ export default function About() {
         {/* Footer */}
         <footer style={{ marginTop: '3rem', padding: '2rem 0', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', color: 'var(--text-secondary)' }}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-            <Link to="/" style={{ color: 'var(--text-secondary)', transition: 'color 0.2s', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>
-              <Home size={14} /> Git Galaxy
+            <Link to="/" style={{ color: 'var(--text-secondary)', transition: 'color 0.2s', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>
+              <img src="/favicon.svg" alt="" style={{ width: '16px', height: '16px', borderRadius: '4px' }} /> Git Galaxy
             </Link>
             <a href="https://github.com/owsam22" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', transition: 'color 0.2s', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>GitHub</a>
             <a href="https://linkedin.com/in/owsam22" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', transition: 'color 0.2s', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>LinkedIn</a>
